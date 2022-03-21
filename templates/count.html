@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        #<title>Running</title>
+        <script type="text/javascript">
+            function load()
+            {
+            setTimeout("window.open('http://192.168.1.104/count', '_self');", 500); 
+            }
+        </script>
+    </head>
+    <body onload="load()">
+        <h1>METR4810 T5 Site (Counter)</h1>
+        <p>Current Number of Masks: {{cnt}}</p>
+        <p>Operating Status: {{status}}</p>
+        <form action="#" method="post">
+            <p><input type="submit" value="Reset" /></p>
+        </form>
+    </body>
+</html>
