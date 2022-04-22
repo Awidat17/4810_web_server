@@ -7,14 +7,9 @@ app.secret_key = "work"
 
 status = "Working"
 
-url = 'http://checkip.dyndns.org'
-req = urlopen(url).read().decode('utf-8')
-myIp = re.findall("\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", req)
-myIp = str("http://" + str(myIp)[2:-2] + "/count")
-
 @app.route("/")
 def home():
-    return render_template("index.html", author = myIp, enemys = ["ploii", "will", "alex", "greg"])
+    return render_template("index.html", author = request.remote_addr, enemys = ["Blow", "Gill"])
 
 @app.route("/demo", methods=["POST", "GET"])
 def demo():
@@ -27,11 +22,15 @@ def demo():
 
 @app.route("/count", methods=["POST", "GET"])
 def count():
+    
+    myIpAdd = request.remote_addr
+    myIp = str("http://" + str(myIpAdd) + "/count")
+
     if request.method == "POST":
         return redirect(url_for("demo"))
     elif "count" in session:
         session["count"] = int(session["count"]) - 1
-        return render_template("count.html", cnt = session["count"], status = status)
+        return render_template("count.html", cnt = session["count"], status = status, ip_add = myIp)
 
 if __name__ == "__main__":
     app.run(host = "0.0.0.0", port = 80, debug=True)
