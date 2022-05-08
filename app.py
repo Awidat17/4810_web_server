@@ -1,4 +1,3 @@
-import re
 from urllib.request import urlopen
 from flask import Flask, redirect, render_template, request, session, url_for
 
@@ -9,7 +8,7 @@ status = "Working"
 
 @app.route("/")
 def home():
-    return render_template("index.html", author = request.remote_addr, enemys = ["Blow", "Gill"])
+    return render_template("index.html", author = request.host_url, enemys = ["Blow", "Gill"])
 
 @app.route("/demo", methods=["POST", "GET"])
 def demo():
@@ -23,8 +22,8 @@ def demo():
 @app.route("/count", methods=["POST", "GET"])
 def count():
     
-    myIpAdd = request.remote_addr
-    myIp = str("http://" + str(myIpAdd) + "/count")
+    myIpAdd = request.host_url
+    myIp = str(str(myIpAdd) + "count")
 
     if request.method == "POST":
         return redirect(url_for("demo"))
@@ -33,4 +32,4 @@ def count():
         return render_template("count.html", cnt = session["count"], status = status, ip_add = myIp)
 
 if __name__ == "__main__":
-    app.run(host = "0.0.0.0", port = 80, debug=True)
+    app.run(host = "0.0.0.0", port = 5000, debug=True)
