@@ -3,6 +3,7 @@
 #---------------------libraries-----------------------------------
 
 #stepper
+import threading
 from time import sleep
 import RPi.GPIO as GPIO
 
@@ -14,8 +15,16 @@ from adafruit_character_lcd.character_lcd import Character_LCD_Mono
 #servo
 from gpiozero import Servo
 
+#communication socket
+import socket
+s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+s.bind((socket.gethostname(), 1234))
+s.listen(10)
 
 #---------------------constants------------------------------------
+total_masks = 12
+status = "Working"
+
 #stepper pins
 IN1=12 # IN1
 IN2=16 # IN2
@@ -293,6 +302,8 @@ def hand_detect():
 #-----------------Main-------------------------------------------
 
 def main():
+	global total_masks
+	global status
 	total_masks = 12
 	while (total_masks>0):
 		if hand_detect():
@@ -316,17 +327,35 @@ def main():
 				sleep(0.1)
 			
 			total_masks -= 1
-			
+			status = "Working"
 		else:
 			set_lcd("push to run     \n masks left: " +  str(total_masks))
+			status = "No Masks"
+
 		
 	set_lcd("out of masks    \nplease reload :)")
 	sleep(3)
-		
+
+def talk():
+	s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+	s.bind((socket.gethostname(), 1234))
+	s.listen(5)
+	while True:
+		clientsocket,address = s.accept()
+		msg = str(str(total_masks) + ":" + status)
+		clientsocket.send(bytes(msg,"utf-8"))		
 		
 
 try:	
-	main()
+	thr1 = threading.Thread(target=main)
+	thr1.start
+
+	thr2 = threading.Thread(target=talk)
+	thr2.start
+
+	thr1.join
+	thr2.join
+
 	set_lcd("     cleanup    \n                ")
 	sleep(3)
 	GPIO.cleanup()
