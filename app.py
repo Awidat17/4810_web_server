@@ -38,8 +38,8 @@ def count():
         return redirect(url_for("demo"))
     elif "count" in session:
         session["count"] = int(session["count"]) - 1
-        #return render_template("count.html", cnt = session["count"], status = status, ip_add = myIp)
-        return render_template("count.html", cnt = msg_str[0], status = msg_str[1], ip_add = myIp)
+        return render_template("count.html", cnt = session["count"], status = status, ip_add = myIp)
+        #return render_template("count.html", cnt = msg_str[0], status = msg_str[1], ip_add = myIp)
 
 if __name__ == "__main__":
     app.run(host = "0.0.0.0", port = 5000, debug=True)

@@ -18,13 +18,10 @@ from gpiozero import Servo
 #communication socket
 import socket
 s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-s.bind((socket.gethostname(), 1234))
+s.bind((socket.gethostname(), 4321))
 s.listen(10)
 
 #---------------------constants------------------------------------
-total_masks = 12
-status = "Working"
-
 #stepper pins
 IN1=12 # IN1
 IN2=16 # IN2
@@ -51,8 +48,8 @@ Button_pin = 17
 servo = 23
 
 #servo duty cycle range
-lower_dc = 1 #-90 deg
-upper_dc = 13   #90 deg
+lower_dc = 2 #-90 deg
+upper_dc = 7 #90 deg
 
 #ir pins
 ir_en = 24 #enable
@@ -100,7 +97,7 @@ GPIO.setup(servo, GPIO.OUT)
 p = GPIO.PWM(servo, 50) # second argument is hertz, sg90 servo runs on 50Hz logic
 
 #Set servo initial position to 0 deg = 7ms duty cycle
-p.start(2)
+p.start(upper_dc+1)
 
 #ir setup
 GPIO.setup(ir_en,GPIO.OUT)
@@ -273,14 +270,34 @@ def button_pressed():
 def servo_full_sweep():
 	#run each step from 5 - 10
 	j = 8
+	
+	#run each step from 9 to 6 | net: 5,6,7,8,9,10,,9,8,7,6,
+	for i in reversed(range(((lower_dc+1)*j),(j*upper_dc))):
+		p.ChangeDutyCycle((i/j)) #argument is the %duty cycle = duty/frequency, 1/20ms = 5% == -90
+		sleep(0.3/j) 
+		
 	for i in range((lower_dc*j),((upper_dc+1)*j)):
 		p.ChangeDutyCycle((i/j)) #argument is the %duty cycle = duty/frequency, 1/20ms = 5% == -90
-		sleep(0.1/j)
-        
+		sleep(0.3/j)
+		
+def servo_open():
+	j = 8
+	
 	#run each step from 9 to 6 | net: 5,6,7,8,9,10,,9,8,7,6,
 	for i in reversed(range(((lower_dc+1)*j),(j*upper_dc))):
 		p.ChangeDutyCycle((i/j)) #argument is the %duty cycle = duty/frequency, 1/20ms = 5% == -90
 		sleep(0.1/j) 
+
+def servo_close():
+	j = 8
+	for i in range((lower_dc*j),((upper_dc+1)*j)):
+		p.ChangeDutyCycle((i/j)) #argument is the %duty cycle = duty/frequency, 1/20ms = 5% == -90
+		sleep(0.1/j)
+		
+	
+	
+        
+	
 
 #-----------------ir methods-------------------------------------------
 def ir_check():
@@ -292,73 +309,63 @@ def ir_check():
     
 def hand_detect():
 	x = False
-	if not ir_check():
+	i = 0
+	number = 3
+	for j in range(number):
 		if not ir_check():
-			if not ir_check():
-				if not ir_check():
-					x = True
+			i=i+1
+	
+	if (i == number):
+		x = True
+	    							
 	return x
 
 #-----------------Main-------------------------------------------
 
 def main():
-	global total_masks
-	global status
-	total_masks = 12
-	while (total_masks>0):
-		if hand_detect():
-			set_lcd("360 Stepper     \n                ")
-			
-			for i in reversed(range(5)):
-				print("rotating stepper in: ", i)
-				sleep(0.1)
-				
-			ccwfine(360)
-			
-			set_lcd("180 Servo       \n                ")
-			for i in reversed(range(5)):
-				print("sweeping servo in: ", i)
-				sleep(0.1)
-				
-			servo_full_sweep()
-			
-			for i in reversed(range(5)):
-				print("program exiting in: ", i)
-				sleep(0.1)
-			
-			total_masks -= 1
-			status = "Working"
-		else:
-			set_lcd("push to run     \n masks left: " +  str(total_masks))
-			
-	status = "No Masks"
+    total_masks = 10
+    status = "working"
+    while (total_masks>0):
+        talk(total_masks, status)
+        if hand_detect():
+            set_lcd("360 Stepper     \n                ")
+            
+            for i in reversed(range(5)):
+                print("rotating stepper in: ", i)
+                sleep(0.1)
+            
+            servo_open()
+            ccwfine(360)
+            
+            set_lcd("180 Servo       \n                ")
+            
+            for i in reversed(range(5)):
+                print("sweeping servo in: ", i)
+                sleep(0.1)
+                
+            servo_close()
+            
+            for i in reversed(range(3)):
+                set_lcd("Please Wait: " + str(i) + "\n seconds        " )
+                print("program exiting in: ", i)
+                sleep(0.3)
+                
+            total_masks -= 1
+        else:
+            set_lcd("push to run     \n masks left: " +  str(total_masks))
 		
-	set_lcd("out of masks    \nplease reload :)")
-	sleep(3)
+    set_lcd("out of masks    \nplease reload :)")
+    talk(total_masks, "Empty")
+    sleep(3)	
 
-def talk():
-	s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-	s.bind((socket.gethostname(), 1234))
-	s.listen(5)
-	while True:
-		clientsocket,address = s.accept()
-		msg = str(str(total_masks) + ":" + status)
-		clientsocket.send(bytes(msg,"utf-8"))		
-		
+def talk(masks,status):	
+	clientsocket,address = s.accept()
+	msg = str(str(masks) + ":" + status)
+	clientsocket.send(bytes(msg,"utf-8"))		
 
 try:	
-	thr1 = threading.Thread(target=main)
-	thr1.start
-
-	thr2 = threading.Thread(target=talk)
-	thr2.start
-	thr1.start
-
-	thr2.join
-
-	thr1.join
-
-	set_lcd("     cleanup 1  \n                ")
+	main()
+	set_lcd("     cleanup    \n                ")
 	sleep(3)
 	GPIO.cleanup()
 
