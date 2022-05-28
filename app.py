@@ -12,7 +12,7 @@ def home():
     if request.method == "POST":
         return redirect(url_for("count"))
     else:
-        return render_template("index2.html")
+        return render_template("index.html")
 
 @app.route("/count", methods=["POST", "GET"])
 def count():
@@ -33,8 +33,7 @@ def count():
     
     if request.method == "POST":
         return redirect(url_for("demo"))
-    elif "count" in session:
-        session["count"] = int(session["count"]) - 1
+    else:
         return render_template("count.html", cnt = msg_str[0], status = msg_str[1], ip_add = myIp)
 
 if __name__ == "__main__":
