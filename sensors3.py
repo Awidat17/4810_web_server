@@ -323,6 +323,7 @@ def hand_detect():
 
 #-----------------Main-------------------------------------------
 
+# operates the dispensors functionality 
 def main():
 	global total_masks
 	global status
@@ -350,24 +351,29 @@ def main():
 				sleep(0.3)
 				
 			total_masks -= 1
+			status = "Working"
 		else:
 			set_lcd("push to run     \n masks left: " +  str(total_masks))
 		
 		return 1
 	else:
 		set_lcd("out of masks    \nplease reload :)")
-
+		status = "Empty"
 		return 0	
 
+# handles communication and main dispenser operations
 def talk():
+	# creates socket for communication with webserver
 	s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 	s.bind((socket.gethostname(), 4321))
 	s.listen(10)
 
+	# creates polling object
 	pollObject = select.poll()
 	pollObject.register(s, select.POLLIN)
 
 	while True:
+		# polls socket for 10ms then sends status information to webserver clients
 		pollData = pollObject.poll(10)
 		for fd, event in pollData:
 			clientsocket,address = s.accept()
@@ -375,7 +381,7 @@ def talk():
 			clientsocket.send(bytes(msg,"utf-8"))
 			clientsocket.close()
 
-		
+		# main() returns 1 if there are still masks and 0 if none are left or error occurs
 		if not main():
 			# send final status information
 			pollData = pollObject.poll(10)
