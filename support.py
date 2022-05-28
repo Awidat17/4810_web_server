@@ -3,8 +3,6 @@
 #---------------------libraries-----------------------------------
 
 #stepper
-import select
-import threading
 from time import sleep
 import RPi.GPIO as GPIO
 
@@ -50,9 +48,6 @@ upper_dc = 7 #90 deg
 ir_en = 24 #enable
 ir_out = 25 #output
 
-# status to be reported
-total_masks = 10
-status = "Working"
 #---------------------initialising---------------------------------
 # set board reference mode
 GPIO.setmode(GPIO.BCM)
@@ -102,7 +97,7 @@ GPIO.setup(ir_en,GPIO.OUT)
 GPIO.setup(ir_out,GPIO.IN)
 
 #cheeky delay for safety
-sleep(1)
+sleep(0.5)
 
 #----------------------Stepper Method-----------------------------
 
@@ -244,7 +239,6 @@ def cwfulltorque(step):
 		Step4()
 		print( "Step Clockwise",i)
 
-
 #----------------------LCD Methods --------------------------------
 def set_lcd(message):
 	lcd.message = str(message)
@@ -291,11 +285,6 @@ def servo_close():
 	for i in range((lower_dc*j),((upper_dc+1)*j)):
 		p.ChangeDutyCycle((i/j)) #argument is the %duty cycle = duty/frequency, 1/20ms = 5% == -90
 		sleep(0.1/j)
-		
-	
-	
-        
-	
 
 #-----------------ir methods-------------------------------------------
 def ir_check():
