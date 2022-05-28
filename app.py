@@ -27,7 +27,7 @@ def count():
         s.connect((socket.gethostname(),4321))
         msg = s.recv(1024) 
         msg_str = (msg.decode("utf-8")).split(':')
-        s.close
+        s.close()
     except:
         msg_str = ["Error:", "Lost Connection"]
     
