@@ -24,6 +24,7 @@ def count():
     # tries to creats a new socket and gets the number of masks and status
     try:
         s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         s.connect((socket.gethostname(),4321))
         msg = s.recv(1024) 
         msg_str = (msg.decode("utf-8")).split(':')
