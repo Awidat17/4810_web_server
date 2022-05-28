@@ -29,7 +29,7 @@ def count():
         msg_str = (msg.decode("utf-8")).split(':')
         s.close
     except:
-        msg_str = ["No Number Sent", "No Connection"]
+        msg_str = ["Error:", "Lost Connection"]
     
     if request.method == "POST":
         return redirect(url_for("demo"))
