@@ -24,7 +24,7 @@ def count():
     # tries to creats a new socket and gets the number of masks and status
     try:
         s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-        s.connect((socket.gethostname(),1234))
+        s.connect((socket.gethostname(),4321))
         msg = s.recv(1024) 
         msg_str = (msg.decode("utf-8")).split(':')
         s.close
@@ -37,6 +37,6 @@ def count():
         return render_template("count.html", cnt = msg_str[0], status = msg_str[1], ip_add = myIp)
 
 if __name__ == "__main__":
-    app.run(host = "0.0.0.0", port = 4321, debug=True)
+    app.run(host = "0.0.0.0", port = 5000, debug=True)
 
 
