@@ -7,16 +7,14 @@ Servo Data Pin: 23
 Ir Pins: En-24, Out-25
 LCD Pins: rs-22 en-5 d4-6 d5-13 d6-19 d7-26
 '''
-#stepper
+
+from time import sleep
 import support as spt
 import select
-from time import sleep
 import RPi.GPIO as GPIO
-
-#communication socket
 import socket
 
-# status to be reported
+# telemetry values
 total_masks = 10
 status = "Working"
 
@@ -24,12 +22,13 @@ status = "Working"
 def main():
 	global total_masks
 	global status
-	if (total_masks>0):
+	if (total_masks > 0):
 		if spt.hand_detect():
 			spt.set_lcd("Dispensing...   \n                ")
 			spt.servo_setup()
 			spt.servo_open()
 			spt.ccwfine(360)
+			spt.jiggle(4, 5)
 			sleep(1)
 			spt.servo_close()
 			spt.servo_sleep()

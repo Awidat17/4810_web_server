@@ -194,6 +194,10 @@ def cwfine(step):
 		Step2()
 		Step1()  
 
+def jiggle(num, mag):
+	for _ in range(0,num):
+		cwfine(mag)
+		ccwfine(mag)
 #----------------------LCD Methods --------------------------------
 def set_lcd(message):
 	lcd.message = str(message)
