@@ -19,6 +19,16 @@ def main():
 		if spt.hand_detect():
 			spt.set_lcd("Dispensing...   \n                ")
 
+
+			spt.red_led(True)
+			sleep(1)
+			spt.green_led(True)
+			sleep(1)
+			spt.red_led(False)
+			sleep(1)
+			spt.green_led(False)
+			sleep(1)
+
 			# initializes servo then opens bottom door
 			spt.servo_setup()
 			spt.servo_open()
