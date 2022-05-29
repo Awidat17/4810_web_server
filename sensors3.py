@@ -28,7 +28,7 @@ def main():
 			spt.servo_setup()
 			spt.servo_open()
 			spt.ccwfine(360)
-			spt.jiggle(4, 5)
+			spt.jiggle(4, 20)
 			sleep(1)
 			spt.servo_close()
 			spt.servo_sleep()
