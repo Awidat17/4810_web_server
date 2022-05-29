@@ -15,20 +15,11 @@ status = "Working"
 def main():
 	global total_masks
 	global status
+	spt.green_led(True)
+	spt.red_led(False)
 	if (total_masks > 0):
 		if spt.hand_detect():
 			spt.set_lcd("Dispensing...   \n                ")
-
-
-			spt.red_led(True)
-			sleep(1)
-			spt.green_led(True)
-			sleep(1)
-			spt.red_led(False)
-			sleep(1)
-			spt.green_led(False)
-			sleep(1)
-
 			# initializes servo then opens bottom door
 			spt.servo_setup()
 			spt.servo_open()
@@ -59,6 +50,8 @@ def main():
 	else:
 		spt.set_lcd("out of masks    \nplease reload :)")
 		status = "Empty"
+		spt.green_led(False)
+		spt.red_led(True)
 		return 0	
 
 # handles communication and main dispenser operations
