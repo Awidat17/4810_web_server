@@ -23,29 +23,33 @@ IN4=21 # IN4
 # Time betwwen stepper steps
 time = 0.001
 
-#stepper motor rotation calibration 
-#(=desired/actual) most recent: 10 r code: 7.05 actual
+# stepper motor rotation calibration 
+# (=desired/actual) most recent: 10 r code: 7.05 actual
 mrc = 1.4184
 
-#LCD constants
+# LCD constants
 lcd_columns = 16
 lcd_rows = 2
 
-#lcd pins declared in init
+# lcd pins declared in init
 
-#button Pin
+# button Pin
 Button_pin = 17
 
-#servo pin
+# servo pin
 servo = 23
 
-#servo duty cycle range
+# servo duty cycle range
 lower_dc = 2 #-90 deg
 upper_dc = 7 #90 deg
 
-#ir pins
+# ir pins
 ir_en = 24 #enable
 ir_out = 25 #output
+
+# led pins
+red_led_pin = 2
+green_led_pin = 3
 
 #---------------------initialising---------------------------------
 # set board reference mode
@@ -82,9 +86,13 @@ sleep(3)
 #set button pin to low input
 GPIO.setup(Button_pin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
-#ir setup
-GPIO.setup(ir_en,GPIO.OUT)
-GPIO.setup(ir_out,GPIO.IN)
+# ir setup
+GPIO.setup(ir_en, GPIO.OUT)
+GPIO.setup(ir_out, GPIO.IN)
+
+# led setup
+GPIO.setup(red_led_pin, GPIO.OUT)
+GPIO.setup(green_led_pin, GPIO.OUT)
 
 #cheeky delay for safety
 sleep(0.5)
@@ -275,3 +283,13 @@ def hand_detect():
 		x = True
 	    							
 	return x
+
+#----------------LED methods-------------------------------------------
+
+def red_led(state):
+
+	GPIO.output(red_led_pin, state)
+
+def green_led(state):
+
+	GPIO.output(green_led_pin, state)
