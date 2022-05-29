@@ -17,9 +17,8 @@ def main():
 	global status
 	spt.green_led(True)
 	spt.red_led(False)
-	if (total_masks > 0):
-		if True:
-		#if spt.hand_detect():
+	if (total_masks > 0):		
+		if spt.hand_detect():
 			spt.set_lcd("Dispensing...   \n                ")
 			# initializes servo then opens bottom door
 			spt.servo_setup()

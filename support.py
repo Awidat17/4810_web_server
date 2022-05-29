@@ -272,7 +272,7 @@ def ir_check():
 def hand_detect():
 	x = False # Defalt hand not detected 
 	i = 0   #build counter
-	number = 3 # number represents number of consectutive detections represent a hand
+	number = 300 # number represents number of consectutive detections represent a hand
 	
 	#if hand detected %number% times in a row return hand detected
 	for j in range(number):
