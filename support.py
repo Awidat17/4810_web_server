@@ -83,15 +83,6 @@ sleep(3)
 #set button pin to low input
 GPIO.setup(Button_pin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
-#Set servo control pi as output
-GPIO.setup(servo, GPIO.OUT)
-
-#initialize pwm for servo pin
-p = GPIO.PWM(servo, 50) # second argument is hertz, sg90 servo runs on 50Hz logic
-
-#Set servo initial position to 0 deg = 7ms duty cycle
-p.start(upper_dc+1)
-
 #ir setup
 GPIO.setup(ir_en,GPIO.OUT)
 GPIO.setup(ir_out,GPIO.IN)
@@ -191,7 +182,6 @@ def ccwfine(step):
 		Step6()
 		Step7()
 		Step8()  
-		print( "Step Counter Clockwise: ",i)
 		
 def cwfine(step):
 	for i in range (int(round(step*mrc))):
@@ -203,7 +193,6 @@ def cwfine(step):
 		Step3()
 		Step2()
 		Step1()  
-		print( "Step Clockwise",i)
 
 #----------------------LCD Methods --------------------------------
 def set_lcd(message):
@@ -214,7 +203,23 @@ def clear_lcd():
 	lcd.message = "                \n                "
 	
 #-------------------------Servo Methods ---------------------------
-		
+p = None
+def servo_setup():
+    global p
+    #Set servo control pi as output
+    GPIO.setup(servo, GPIO.OUT)
+
+    #initialize pwm for servo pin
+    p = GPIO.PWM(servo, 50) # second argument is hertz, sg90 servo runs on 50Hz logic
+
+    #Set servo initial position to 0 deg = 7ms duty cycle
+    p.start(upper_dc+1)
+
+def servo_sleep():
+    GPIO.output(servo, False)
+    global p
+    p = None
+
 def servo_open():
 	j = 8
 	

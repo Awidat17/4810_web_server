@@ -25,16 +25,15 @@ def main():
 	global total_masks
 	global status
 	if (total_masks>0):
-		if spt.hand_detect():	
-
-			spt.set_lcd("Dispensing      \n                ")
-
+		if spt.hand_detect():
+			spt.set_lcd("Dispensing...   \n                ")
+			spt.servo_setup()
 			spt.servo_open()
 			spt.ccwfine(360)
-			sleep(1)			
-			
+			sleep(1)
 			spt.servo_close()
-			
+			spt.servo_sleep()
+
 			for i in reversed(range(3)):
 				spt.set_lcd("Please Wait: " + str(i) + "\n seconds        " )
 				sleep(0.3)
