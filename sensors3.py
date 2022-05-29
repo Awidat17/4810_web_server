@@ -1,7 +1,12 @@
 #Complitation1
 
-#---------------------libraries-----------------------------------
-
+#Connections List:
+'''
+Stepper Driver: A-12 B-16 C-20 D-21
+Servo Data Pin: 23
+Ir Pins: En-24, Out-25
+LCD Pins: rs-22 en-5 d4-6 d5-13 d6-19 d7-26
+'''
 #stepper
 import support as spt
 import select
@@ -11,45 +16,33 @@ import RPi.GPIO as GPIO
 #communication socket
 import socket
 
-#---------------------constants------------------------------------
-
 # status to be reported
 total_masks = 10
 status = "Working"
-
-#-----------------Main-------------------------------------------
 
 # operates the dispensors functionality 
 def main():
 	global total_masks
 	global status
 	if (total_masks>0):
-		if spt.hand_detect():
-			spt.set_lcd("360 Stepper     \n                ")
-			for i in reversed(range(5)):
-				print("rotating stepper in: ", i)
-				sleep(0.1)
-			
+		if spt.hand_detect():	
+
+			spt.set_lcd("Dispensing      \n                ")
+
 			spt.servo_open()
 			spt.ccwfine(360)
+			sleep(1)			
 			
-			spt.set_lcd("180 Servo       \n                ")
-			
-			for i in reversed(range(5)):
-				print("sweeping servo in: ", i)
-				sleep(0.1)
-				
 			spt.servo_close()
 			
 			for i in reversed(range(3)):
 				spt.set_lcd("Please Wait: " + str(i) + "\n seconds        " )
-				print("program exiting in: ", i)
 				sleep(0.3)
 				
 			total_masks -= 1
 			status = "Working"
 		else:
-			spt.set_lcd("push to run     \n masks left: " +  str(total_masks))
+			spt.set_lcd("hold hand under\n masks left: " +  str(total_masks))
 		
 		return 1
 	else:
