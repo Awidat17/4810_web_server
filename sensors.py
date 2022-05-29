@@ -1,12 +1,5 @@
 #Complitation1
 
-#Connections List:
-'''
-Stepper Driver: A-12 B-16 C-20 D-21
-Servo Data Pin: 23
-Ir Pins: En-24, Out-25
-LCD Pins: rs-22 en-5 d4-6 d5-13 d6-19 d7-26
-'''
 
 from time import sleep
 import support as spt
@@ -25,24 +18,34 @@ def main():
 	if (total_masks > 0):
 		if spt.hand_detect():
 			spt.set_lcd("Dispensing...   \n                ")
+
+			# initializes servo then opens bottom door
 			spt.servo_setup()
 			spt.servo_open()
+
+			# spins dispensor stepper motor counter-clock wise
 			spt.ccwfine(360)
+
+			# shakes stepper 
 			spt.jiggle(4, 20)
 			sleep(1)
+
+			# closes bottom door then disconnects servo
 			spt.servo_close()
 			spt.servo_sleep()
 
 			for i in reversed(range(3)):
 				spt.set_lcd("Please Wait: " + str(i) + "\n seconds        " )
 				sleep(0.3)
-				
+			
+			# updates dispensor status
 			total_masks -= 1
 			status = "Working"
 		else:
 			spt.set_lcd("hold hand under\n masks left: " +  str(total_masks))
 		
 		return 1
+
 	else:
 		spt.set_lcd("out of masks    \nplease reload :)")
 		status = "Empty"
@@ -81,18 +84,19 @@ def talk():
 			sleep(3)
 			break
 
+if __name__ == "__main__":
+	try:	
+		# begins main operations of dispensor
+		talk()
+		spt.set_lcd("Operation Ended  \n                ")
+		sleep(3)
+		GPIO.cleanup()
 
-try:	
-	talk()
-	spt.set_lcd("     cleanup    \n                ")
-	sleep(3)
-	GPIO.cleanup()
-
-#exit code with (ctrl) + (c)
-except KeyboardInterrupt:
-	spt.p.stop()
-	spt.clear_lcd()
-	GPIO.cleanup()
-	print("program stopped")
+	#exit code with (ctrl) + (c)
+	except KeyboardInterrupt:
+		spt.p.stop()
+		spt.clear_lcd()
+		GPIO.cleanup()
+		print("program stopped")
 
 GPIO.cleanup()

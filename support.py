@@ -1,20 +1,19 @@
-#Complitation1
+# Support
+# Connections List:
+'''
+Stepper Driver: A-12 B-16 C-20 D-21, vin - 5V
+Servo Data Pin: 23,  vin-5V
+Ir Pins: En-24, Out-25, v++-3V, 
+LCD Pins: rs-22 en-5 d4-6 d5-13 d6-19 d7-26 vdd-5V A-5V  vss,v0,rw,k-GND
+'''
 
-#---------------------libraries-----------------------------------
-
-#stepper
 from time import sleep
 import RPi.GPIO as GPIO
-
-#lcd
 import board
 from digitalio import DigitalInOut
 from adafruit_character_lcd.character_lcd import Character_LCD_Mono
-
-#servo
 from gpiozero import Servo
 
-#---------------------constants------------------------------------
 #stepper pins
 IN1=12 # IN1
 IN2=16 # IN2
@@ -90,8 +89,9 @@ GPIO.setup(ir_out,GPIO.IN)
 #cheeky delay for safety
 sleep(0.5)
 
-#----------------------Stepper Method-----------------------------
+#----------------------Stepper Methods-----------------------------
 
+# steps of stepper sequence
 def Step1():
     #0001
     stepCode = [0, 0, 0, 1]
@@ -100,7 +100,6 @@ def Step1():
     GPIO.output(IN3, stepCode[2])
     GPIO.output(IN4, stepCode[3])
     sleep(time)
-
 
 def Step2():
     #0011
@@ -171,7 +170,7 @@ def Step8():
     GPIO.output(IN4, stepCode[3])
     sleep(time)
 
-
+# counter-clockwise stepper motor rotation
 def ccwfine(step):	
 	for i in range (int(round(step*mrc))):   
 		Step1()
@@ -182,7 +181,8 @@ def ccwfine(step):
 		Step6()
 		Step7()
 		Step8()  
-		
+
+# clockwise stepper motor rotation
 def cwfine(step):
 	for i in range (int(round(step*mrc))):
 		Step8()
@@ -194,20 +194,27 @@ def cwfine(step):
 		Step2()
 		Step1()  
 
+# stepper motor shake
 def jiggle(num, mag):
 	for _ in range(0,num):
 		cwfine(mag)
 		ccwfine(mag)
+
 #----------------------LCD Methods --------------------------------
+# displays "message" on lcd
 def set_lcd(message):
 	lcd.message = str(message)
 	#
 	
+# clears lcd
 def clear_lcd():
 	lcd.message = "                \n                "
 	
 #-------------------------Servo Methods ---------------------------
-p = None
+
+p = None # pwm object for servo
+
+# initializes servo
 def servo_setup():
     global p
     #Set servo control pi as output
@@ -219,11 +226,13 @@ def servo_setup():
     #Set servo initial position to 0 deg = 7ms duty cycle
     p.start(upper_dc+1)
 
+# disconnects servo
 def servo_sleep():
     GPIO.output(servo, False)
     global p
     p = None
 
+# moves servo to open position
 def servo_open():
 	j = 8
 	
@@ -232,6 +241,7 @@ def servo_open():
 		p.ChangeDutyCycle((i/j)) #argument is the %duty cycle = duty/frequency, 1/20ms = 5% == -90
 		sleep(0.1/j) 
 
+# moves servo to closed position 
 def servo_close():
 	j = 8
 	
@@ -241,6 +251,7 @@ def servo_close():
 		sleep(0.1/j)	
 
 #-----------------ir methods-------------------------------------------
+# checks for ir detection signal
 def ir_check():
 	
 	GPIO.output(ir_en, True) # turn blaster on
@@ -248,7 +259,8 @@ def ir_check():
 	x = GPIO.input(ir_out)   #read state of receiver False:detection
 	GPIO.output(ir_en, False) # turn blaster off 
 	return x
-    
+
+# checks if hand detected 
 def hand_detect():
 	x = False # Defalt hand not detected 
 	i = 0   #build counter
